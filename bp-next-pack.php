@@ -303,10 +303,66 @@ class BpNextUserGroupsWidget extends WP_Widget {
   }
 }
 
+
+
+class UserLoggedImgWidget extends WP_Widget {
+  function UserLoggedImgWidget() {
+    parent::WP_Widget( false, $name = 'Widgets com usuários logados' );
+  }
+
+  function widget( $args, $instance ) {
+    
+	  extract( $args );
+	  echo $before_widget;
+	  $title = apply_filters('widget_title', $instance['title']);
+	  if( $title ) echo $before_title . $title . $after_title;
+	  
+		$uids = bp_next_pack_get_random_users();
+		
+		echo '<ul class="header-block">';
+			foreach($uids as $indice=>$uid){
+				
+				echo '<li class="img-0'.$indice.'">';
+					echo bp_core_fetch_avatar( array( 'item_id' => $uid, 'type' => 'full' ) ) ;
+				echo '</li>';
+			}
+		echo '</ul>';
+	  
+	  
+	  echo $after_widget;
+  }
+
+
+  //////////////////////////////////////////////////////
+  //Update the widget settings
+  function update( $new_instance, $old_instance )
+  {
+      $instance = $old_instance;
+      $instance['title'] = $new_instance['title'];
+      return $instance;
+  }
+  
+  ////////////////////////////////////////////////////
+  //Display the widget settings on the widgets admin panel
+  function form( $instance )
+  {
+      ?>
+      <p>
+          <label for="<?php echo $this->get_field_id('title'); ?>"><?php echo 'Title:'; ?></label>
+          <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo $instance['title']; ?>" />
+      </p>
+      <?php
+  }
+  
+  function LoggedUserList () {}
+  
+}
+
 add_action( 'widgets_init', 'BpNextProfileWidgetInit' );
 function BpNextProfileWidgetInit() {
   register_widget( 'BpNextProfileWidget' );
   register_widget( 'BpNextUserGroupsWidget' );
+  register_widget( 'UserLoggedImgWidget' );
 }
 
 // **** "logged in  Account" Menu ******
@@ -416,6 +472,22 @@ function bp_next_pack_add_menu_items(){
   // sort the sub menu items
   bp_core_sort_subnav_items();
   
+}
+
+// get users with specified roles
+function bp_next_pack_get_random_users( ) {
+    global $wpdb;
+    
+    $sql = '
+        SELECT distinct  ID, display_name
+        FROM        ' . $wpdb->users . ' INNER JOIN ' . $wpdb->usermeta . '
+        ON          ' . $wpdb->users . '.ID             =       ' . $wpdb->usermeta . '.user_id
+    ';
+
+    $sql .= ' ORDER BY RAND() ';
+	$sql .= ' LIMIT 4 ';
+    $userIDs = $wpdb->get_col( $sql );
+    return $userIDs;
 }
 
 ?>
