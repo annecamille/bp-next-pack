@@ -7,6 +7,166 @@ Version: 0.3.0
 Author: Alberto Souza 
 Author URI: albertosouza.net
 */
+
+// Bloco para mostrar os administradores do Grupo
+class BpNextAdmGroupWidget extends WP_Widget {
+  function BpNextAdmGroupWidget() {
+    parent::WP_Widget( false, $name = 'Bloco de Administradores do Grupo' );
+  }
+
+  function widget( $args, $instance ) {
+    extract( $args );
+
+    echo $before_widget;
+
+    // add more menu items
+    bp_next_pack_add_menu_items();
+      $title = apply_filters('widget_title', $instance['title']);
+      if( $title ) echo $before_title . $title . $after_title;
+      $this->admGroup( $args, $instance );
+
+    echo $after_widget;
+  }
+
+  //////////////////////////////////////////////////////
+  //Update the widget settings
+  /**
+   * Update the login widget options
+   *
+   * @param array $new_instance The new instance options
+   * @param array $old_instance The old instance options
+   */
+  function update( $new_instance, $old_instance ) {
+    $instance             = $old_instance;
+    $instance['title']    = strip_tags( $new_instance['title'] );
+    $instance['register'] = esc_url( $new_instance['register'] );
+    $instance['lostpass'] = esc_url( $new_instance['lostpass'] );
+
+    return $instance;
+  }
+  
+  ////////////////////////////////////////////////////
+  //Display the widget settings on the widgets admin panel
+  function form( $instance ) {
+
+    // Form values
+    $title    = !empty( $instance['title'] )    ? esc_attr( $instance['title'] )    : '';
+
+    ?>
+
+    <p>
+      <label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'bbpress' ); ?>
+      <input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo $title; ?>" /></label>
+    </p>
+
+    <?php
+  }
+  // 
+  function admGroup( $args, $instance ){
+    if ( bp_has_groups() ) : while ( bp_groups() ) : bp_the_group();
+	?>
+	<div id="item-actions">
+			<?php if ( bp_group_is_visible() ) : ?>
+		
+				<div id="group-admins">
+				<!-------- <h3><?php _e( 'Administrators', 'buddypress' ) ?></h3> ---------->
+				<?php bp_group_admin_memberlist( false ) ?>
+		
+				<?php do_action( 'bp_after_group_menu_admins' ) ?>
+				</div>
+		
+				<?php if ( bp_group_has_moderators() ) : ?>
+					<div id="group-mods">
+					<?php do_action( 'bp_before_group_menu_mods' ) ?>
+		
+					<h3><?php _e( 'Moderators' , 'buddypress' ) ?></h3>
+					<?php bp_group_mod_memberlist( false ) ?>
+		
+					<?php do_action( 'bp_after_group_menu_mods' ) ?>
+					</div>
+				<?php endif; ?>
+				
+				<?php do_action( 'bp_before_group_header_meta' ) ?>
+
+				<div id="item-meta">			
+					<?php do_action( 'bp_group_header_meta' ) ?>
+				</div>
+		
+			<?php endif; ?>
+		</div><!-- #item-actions -->
+		<?php endwhile; endif; ?>
+	<?php
+  }
+
+}
+
+
+// IMAGEM DO GRUPO
+class BpNextImageGroupWidget extends WP_Widget {
+  function BpNextImageGroupWidget() {
+    parent::WP_Widget( false, $name = 'Imagem do grupo' );
+  }
+
+  function widget( $args, $instance ) {
+    extract( $args );
+
+    echo $before_widget;
+
+    // add more menu items
+    bp_next_pack_add_menu_items();
+      $title = apply_filters('widget_title', $instance['title']);
+      if( $title ) echo $before_title . $title . $after_title;
+      $this->imageGroup( $args, $instance );
+
+    echo $after_widget;
+  }
+
+  //////////////////////////////////////////////////////
+  //Update the widget settings
+  /**
+   * Update the login widget options
+   *
+   * @param array $new_instance The new instance options
+   * @param array $old_instance The old instance options
+   */
+  function update( $new_instance, $old_instance ) {
+    $instance             = $old_instance;
+    $instance['title']    = strip_tags( $new_instance['title'] );
+    $instance['register'] = esc_url( $new_instance['register'] );
+    $instance['lostpass'] = esc_url( $new_instance['lostpass'] );
+
+    return $instance;
+  }
+  
+  ////////////////////////////////////////////////////
+  //Display the widget settings on the widgets admin panel
+  function form( $instance ) {
+
+    // Form values
+    $title    = !empty( $instance['title'] )    ? esc_attr( $instance['title'] )    : '';
+
+    ?>
+
+    <p>
+      <label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'bbpress' ); ?>
+      <input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo $title; ?>" /></label>
+    </p>
+
+    <?php
+  }
+  // 
+  function imageGroup( $args, $instance ){
+	if ( bp_has_groups() ) : while ( bp_groups() ) : bp_the_group();
+		?>
+		<div id="item-header-avatar">
+			<a href="<?php bp_group_permalink() ?>" title="<?php bp_group_name() ?>">
+				<?php bp_group_avatar() ?>
+			</a>
+		</div><!-- #item-header-avatar -->
+	<?php endwhile; endif; 
+  }
+
+}
 class BpNextProfileWidget extends WP_Widget {
   function BpNextProfileWidget() {
     parent::WP_Widget( false, $name = 'NEXT Logged ind user Profile' );
@@ -307,7 +467,7 @@ class BpNextUserGroupsWidget extends WP_Widget {
 
 class UserLoggedImgWidget extends WP_Widget {
   function UserLoggedImgWidget() {
-    parent::WP_Widget( false, $name = 'Widgets com usuários logados' );
+    parent::WP_Widget( false, $name = 'Widgets com usuÃ¡rios logados' );
   }
 
   function widget( $args, $instance ) {
@@ -363,6 +523,8 @@ function BpNextProfileWidgetInit() {
   register_widget( 'BpNextProfileWidget' );
   register_widget( 'BpNextUserGroupsWidget' );
   register_widget( 'UserLoggedImgWidget' );
+  register_widget( 'BpNextAdmGroupWidget' );
+  register_widget( 'BpNextImageGroupWidget' );
 }
 
 // **** "logged in  Account" Menu ******
@@ -489,5 +651,7 @@ function bp_next_pack_get_random_users( ) {
     $userIDs = $wpdb->get_col( $sql );
     return $userIDs;
 }
+
+
 
 ?>
