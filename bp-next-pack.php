@@ -69,7 +69,7 @@ class BpNextAdmGroupWidget extends WP_Widget {
 			<?php if ( bp_group_is_visible() ) : ?>
 		
 				<div id="group-admins">
-				<!-------- <h3><?php _e( 'Administrators', 'buddypress' ) ?></h3> ---------->
+				<h3><?php _e( 'Administrators', 'buddypress' ) ?></h3><br/>
 				<?php bp_group_admin_memberlist( false ) ?>
 		
 				<?php do_action( 'bp_after_group_menu_admins' ) ?>
@@ -551,7 +551,7 @@ function bp_next_pack_adminbar_account_menu() {
   <?php
 
   // notification menu  
-  bp_adminbar_notifications_menu();
+  bp_next_pack_bp_adminbar_notifications_menu();
   
   // Loop through each navigation item
   $counter = 0;
@@ -653,5 +653,51 @@ function bp_next_pack_get_random_users( ) {
 }
 
 
+/**
+ * Notifications Menu
+ */
+function bp_next_pack_bp_adminbar_notifications_menu() {
+
+	if ( !is_user_logged_in() )
+		return false;
+
+		
+	$notifications = bp_core_get_notifications_for_user( bp_loggedin_user_id() );
+	
+	echo '<li id="bp-adminbar-notifications-menu"';
+	
+	if ($notifications){
+	echo 'class="aviso"';	
+	}	
+	echo '><a href="' . bp_loggedin_user_domain() . '">';
+	_e( 'Notifications', 'buddypress' );
+
+	if ( $notifications ) { ?>
+		<span><?php echo count( $notifications ) ?></span>
+	<?php
+	}
+
+	echo '</a>';
+	echo '<ul>';
+
+	if ( $notifications ) {
+		$counter = 0;
+		for ( $i = 0, $count = count( $notifications ); $i < $count; ++$i ) {
+			$alt = ( 0 == $counter % 2 ) ? ' class="alt"' : ''; ?>
+
+			<li<?php echo $alt ?>><?php echo $notifications[$i] ?></li>
+
+			<?php $counter++;
+		}
+	} else { ?>
+
+		<li><a href="<?php echo bp_loggedin_user_domain() ?>"><?php _e( 'No new notifications.', 'buddypress' ); ?></a></li>
+
+	<?php
+	}
+
+	echo '</ul>';
+	echo '</li>';
+}
 
 ?>
